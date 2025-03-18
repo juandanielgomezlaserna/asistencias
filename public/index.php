@@ -1,7 +1,17 @@
 <?php
 require_once '../app/config/global.php';
 require_once '../app/controllers/homeController.php';
-require_once '../app/controllers/grupoController.php';
+require_once '../app/controllers/loginController.php';
+require_once '../app/controllers/administradorController.php';
+require_once '../app/controllers/centroController.php';
+require_once '../app/controllers/coordinadorController.php';
+require_once '../app/controllers/programaController.php';
+require_once '../app/controllers/ambienteController.php';
+require_once '../app/controllers/fichaController.php';
+require_once '../app/controllers/instructorController.php';
+require_once '../app/controllers/competenciaController.php';
+require_once '../app/controllers/asistenciaController.php';
+require_once '../app/controllers/aprendizController.php';
 
 $url = $_SERVER['REQUEST_URI']; //lo que se ingresa en URL
 

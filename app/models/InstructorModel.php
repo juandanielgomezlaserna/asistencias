@@ -33,15 +33,29 @@ class InstructorModel extends BaseModel{
 
     public function getInstructor($id){
         try {
-            $sql = "SELECT i.id, i.nombre AS nombreInstructor, i.cedula AS cedulaInstructor, 
+            $sql = "SELECT i.*, 
                        c.nombre AS nombreCentro
                 FROM instructor i
-                INNER JOIN centro c ON i.fkIdCentro = c.id";
+                INNER JOIN centro c ON i.fkIdCentro = c.id
+                WHERE i.id = :id";
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindParam(":id", $id, PDO::PARAM_INT);
             $statement->execute();
             $result = $statement->fetchAll(PDO::FETCH_OBJ);
             return $result[0];
+        } catch (PDOException $ex) {
+            echo "Error al obtener el instructor: ".$ex->getMessage();
+        }
+    }
+
+    public function getCentro($id){
+        try {
+            $sql = "SELECT fkIdCentro FROM $this->table WHERE id=:id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            $result = $statement->fetchColumn();
+            return $result;
         } catch (PDOException $ex) {
             echo "Error al obtener el instructor: ".$ex->getMessage();
         }
@@ -73,5 +87,19 @@ class InstructorModel extends BaseModel{
         } catch (PDOException $ex) {
             echo "No se pudo eliminar el instructor";
         }
+    }
+
+    public function validarLogin($id, $cedula){
+        $sql = "SELECT * FROM $this->table WHERE id=:id and cedula=:cedula";
+        $statement = $this->dbConnection->prepare($sql);
+        $statement->bindParam(":id", $id);
+        $statement->bindParam(":cedula", $cedula);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_OBJ);
+        if (count($result) > 0) {
+            $_SESSION["instructor"] = $result[0]->id;
+            return true;
+        }
+        return false;
     }
 }

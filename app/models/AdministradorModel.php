@@ -60,7 +60,7 @@ class AdministradorModel extends BaseModel{
             $result = $statement->execute();
             return $result;
         } catch (PDOException $ex) {
-            echo "No se pudo editar el administrador";
+            echo "No se pudo editar el administrador".$ex;
         }
     }
 
@@ -73,5 +73,19 @@ class AdministradorModel extends BaseModel{
         } catch (PDOException $ex) {
             echo "No se pudo eliminar el administrador";
         }
+    }
+
+    public function validarLogin($id, $cedula){
+        $sql = "SELECT * FROM $this->table WHERE id=:id and cedula=:cedula";
+        $statement = $this->dbConnection->prepare($sql);
+        $statement->bindParam(":id", $id);
+        $statement->bindParam(":cedula", $cedula);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_OBJ);
+        if (count($result) > 0) {
+            $_SESSION["administrador"] = $result[0]->id;
+            return true;
+        }
+        return false;
     }
 }

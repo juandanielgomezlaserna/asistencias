@@ -33,10 +33,10 @@ class CoordinadorModel extends BaseModel{
 
     public function getCoordinador($id){
         try {
-            $sql = "SELECT coor.id, coor.nombre AS nombreCoordinador, coor.cedula AS cedulaCoordinador, 
-                       r.nombre AS nombreRegional
+            $sql = "SELECT coor.*, r.nombre AS nombreRegional
                 FROM coordinador coor
-                INNER JOIN regional r ON coor.fkIdRegional = r.id";
+                INNER JOIN regional r ON coor.fkIdRegional = r.id
+                WHERE coor.id = :id";
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindParam(":id", $id, PDO::PARAM_INT);
             $statement->execute();
@@ -47,7 +47,7 @@ class CoordinadorModel extends BaseModel{
         }
     }
 
-    public function editCompetencia($id, $nombre, $cedula,  $fkIdRegional){
+    public function editCoordinador($id, $nombre, $cedula,  $fkIdRegional){
         try {
             $sql = "UPDATE coordinador 
                 SET nombre = :nombre, cedula = :cedula, fkIdRegional = :fkIdRegional
@@ -73,5 +73,31 @@ class CoordinadorModel extends BaseModel{
         } catch (PDOException $ex) {
             echo "No se pudo eliminar el coordinador";
         }
+    }
+
+    public function getAllAdministrador($id){
+        try {
+            $sql = "SELECT * FROM $this->table WHERE fkIdRegional=:id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            return $statement->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $ex) {
+            echo "No se pudo obtener los coordinadores: ".$ex;
+        }
+    }
+
+    public function validarLogin($id, $cedula){
+        $sql = "SELECT * FROM $this->table WHERE id=:id and cedula=:cedula";
+        $statement = $this->dbConnection->prepare($sql);
+        $statement->bindParam(":id", $id);
+        $statement->bindParam(":cedula", $cedula);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_OBJ);
+        if (count($result) > 0) {
+            $_SESSION["coordinador"] = $result[0]->id;
+            return true;
+        }
+        return false;
     }
 }

@@ -1,6 +1,4 @@
 <?php
-// Tiempo inactivo de 1 minuto
-define("INACTIVE_TIME", 10);
 define("MAIN_APP_ROUTE", __DIR__.'/../app/');
 define("DRIVER" , "mysql");
 define("HOST" , "localhost");

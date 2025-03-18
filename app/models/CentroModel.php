@@ -33,17 +33,31 @@ class CentroModel extends BaseModel{
 
     public function getCentro($id){
         try {
-            $sql = "SELECT c.id, c.nombre AS nombreCentro, 
+            $sql = "SELECT c.*, 
                 r.nombre AS nombreRegional, 
-                coor.nombre AS nombreCoordinador, coor.cedula AS cedulaCoordinador
+                coor.nombre AS nombreCoordinador
                 FROM centro c
                 INNER JOIN regional r ON c.fkIdRegional = r.id
-                INNER JOIN coordinador coor ON c.fkIdCoordinador = coor.id";
+                INNER JOIN coordinador coor ON c.fkIdCoordinador = coor.id
+                WHERE c.id = :id";
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindParam(":id", $id, PDO::PARAM_INT);
             $statement->execute();
             $result = $statement->fetchAll(PDO::FETCH_OBJ);
             return $result[0];
+        } catch (PDOException $ex) {
+            echo "Error al obtener el centro: ".$ex->getMessage();
+        }
+    }
+
+    public function getCentroCoordinador($id){
+        try {
+            $sql = "SELECT id FROM $this->table WHERE fkIdCoordinador=:id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            $result = $statement->fetchColumn();
+            return $result;
         } catch (PDOException $ex) {
             echo "Error al obtener el centro: ".$ex->getMessage();
         }
@@ -74,6 +88,18 @@ class CentroModel extends BaseModel{
             $statement->execute();
         } catch (PDOException $ex) {
             echo "No se pudo eliminar el centro";
+        }
+    }
+
+    public function getAllAdministrador($id){
+        try {
+            $sql = "SELECT * FROM $this->table WHERE fkIdRegional=:id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            return $statement->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $ex) {
+            echo "No se pudo obtener los centros: ".$ex;
         }
     }
 }

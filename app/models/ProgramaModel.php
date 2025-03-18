@@ -31,10 +31,10 @@ class ProgramaModel extends BaseModel{
 
     public function getPrograma($id){
         try {
-            $sql = "SELECT p.id, p.nombre AS nombrePrograma, 
-                       c.nombre AS nombreCentro
+            $sql = "SELECT p.*, c.nombre AS nombreCentro
                 FROM programa p
-                INNER JOIN centro c ON p.fkIdCentro = c.id";
+                INNER JOIN centro c ON p.fkIdCentro = c.id
+                WHERE p.id = :id";
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindParam(":id", $id, PDO::PARAM_INT);
             $statement->execute();
@@ -69,6 +69,18 @@ class ProgramaModel extends BaseModel{
             $statement->execute();
         } catch (PDOException $ex) {
             echo "No se pudo eliminar el programa";
+        }
+    }
+
+    public function getAllCentros($id){
+        try {
+            $sql = "SELECT * FROM $this->table WHERE fkIdCentro=:id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            return $statement->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $ex) {
+            echo "No se pudo obtener los programas: ".$ex;
         }
     }
 }

@@ -33,15 +33,50 @@ class FichaModel extends BaseModel{
 
     public function getFicha($id){
         try {
-            $sql = "SELECT f.id, f.ficha AS numeroFicha, f.cantAprendices, 
-                       p.nombre AS nombrePrograma
+            $sql = "SELECT f.*, p.nombre AS nombrePrograma
                 FROM ficha f
-                INNER JOIN programa p ON f.fkIdPrograma = p.id";
+                INNER JOIN programa p ON f.fkIdPrograma = p.id
+                WHERE f.id = :id";
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindParam(":id", $id, PDO::PARAM_INT);
             $statement->execute();
             $result = $statement->fetchAll(PDO::FETCH_OBJ);
             return $result[0];
+        } catch (PDOException $ex) {
+            echo "Error al obtener la ficha: ".$ex->getMessage();
+        }
+    }
+
+    public function getFichaInstructor($id){
+        try {
+            $sql = "SELECT f.*, p.nombre AS nombrePrograma
+            FROM $this->table f 
+            INNER JOIN programa p ON f.fkIdPrograma = p.id
+            INNER JOIN centro c ON p.fkIdCentro = c.id
+            WHERE c.id = :id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            $result = $statement->fetchAll(PDO::FETCH_OBJ);
+            return $result;
+        } catch (PDOException $ex) {
+            echo "Error al obtener la ficha: ".$ex->getMessage();
+        }
+    }
+
+    public function getFichasCoordinador($id){
+        try {
+            $sql = "SELECT f.*, p.nombre AS nombrePrograma
+            FROM $this->table f 
+            INNER JOIN programa p ON f.fkIdPrograma = p.id
+            INNER JOIN centro c ON p.fkIdCentro = c.id
+            INNER JOIN coordinador co ON c.fkIdCoordinador = co.id
+            WHERE co.id = :id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            $result = $statement->fetchAll(PDO::FETCH_OBJ);
+            return $result;
         } catch (PDOException $ex) {
             echo "Error al obtener la ficha: ".$ex->getMessage();
         }
@@ -60,7 +95,7 @@ class FichaModel extends BaseModel{
             $result = $statement->execute();
             return $result;
         } catch (PDOException $ex) {
-            echo "No se pudo editar la ficha";
+            echo "No se pudo editar la ficha".$ex;
         }
     }
 
@@ -71,7 +106,7 @@ class FichaModel extends BaseModel{
             $statement->bindParam(":id", $id, PDO::PARAM_INT);
             $statement->execute();
         } catch (PDOException $ex) {
-            echo "No se pudo eliminar la Ficha";
+            echo "No se pudo eliminar la Ficha".$ex;
         }
     }
 }

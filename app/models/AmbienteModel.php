@@ -33,7 +33,8 @@ class AmbienteModel extends BaseModel{
         try {
             $sql = $sql = "SELECT a.*, c.nombre AS centroNombre 
             FROM ambiente a
-            INNER JOIN centro c ON a.fkIdCentro = c.id";
+            INNER JOIN centro c ON a.fkIdCentro = c.id
+            WHERE a.id=:id";
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindParam(":id", $id, PDO::PARAM_INT);
             $statement->execute();

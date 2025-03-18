@@ -19,7 +19,7 @@ class AprendizModel extends BaseModel{
         parent::__construct();
     }
 
-    public function saveAprediz($nombre, $cedula, $estado, $fkIdFicha){
+    public function saveAprendiz($nombre, $cedula, $estado, $fkIdFicha){
         try {
             $sql = "INSERT INTO $this->table (nombre, cedula, estado, fkIdFicha) VALUES (:nombre, :cedula, :estado, :fkIdFicha)";
             $statement = $this->dbConnection->prepare($sql);
@@ -35,9 +35,12 @@ class AprendizModel extends BaseModel{
 
     public function getAprendiz($id){
         try {
-            $sql = "SELECT a.*, f.ficha AS numeroFicha 
+            $sql = "SELECT a.*, f.ficha AS numeroFicha,
+                p.nombre AS nombrePrograma
                 FROM aprendiz a
-                INNER JOIN ficha f ON a.fkIdFicha = f.id";
+                INNER JOIN ficha f ON a.fkIdFicha = f.id
+                INNER JOIN programa p ON f.fkIdPrograma = p.id
+                WHERE a.id = :id";
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindParam(":id", $id, PDO::PARAM_INT);
             $statement->execute();
@@ -45,6 +48,43 @@ class AprendizModel extends BaseModel{
             return $result[0];
         } catch (PDOException $ex) {
             echo "Error al obtener el aprendiz: ".$ex->getMessage();
+        }
+    }
+
+    public function getAprendices($id){
+        try {
+            $sql = "SELECT a.*, f.ficha AS numeroFicha
+            FROM aprendiz a
+            INNER JOIN ficha f ON a.fkIdFicha = f.id
+            INNER JOIN programa p ON f.fkIdPrograma = p.id
+            INNER JOIN centro c ON p.fkIdCentro = c.id
+            INNER JOIN coordinador co ON c.fkIdCoordinador = co.id
+            WHERE co.id = :id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            $result = $statement->fetchAll(PDO::FETCH_OBJ);
+            return $result;
+        } catch (PDOException $ex) {
+            echo "Error al obtener el aprendiz: ".$ex->getMessage();
+        }
+    }
+
+    public function getAllCompetencia($id){
+        try {
+            $sql = "SELECT a.*
+            FROM competencia c
+            INNER JOIN ficha f ON c.fkIdFicha = f.id
+            INNER JOIN aprendiz a ON a.fkIdficha = f.id
+            WHERE c.id = :id
+            ORDER BY LOWER(a.nombre) ASC";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            $result = $statement->fetchAll(PDO::FETCH_OBJ);
+            return $result;
+        } catch (PDOException $ex) {
+            echo "Error al obtener los aprendices: ".$ex->getMessage();
         }
     }
 

@@ -26,7 +26,7 @@ class CompetenciaModel extends BaseModel{
             $sql = "INSERT INTO $this->table (nombre, descripcion, horaInicio, horaFin, fkIdInstructor, fkIdFicha) VALUES (:nombre, :descripcion, :horaInicio, :horaFin, :fkIdInstructor, :fkIdFicha)";
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindParam(":nombre", $nombre, PDO::PARAM_STR);
-            $statement->bindParam(":descripcion", $descripcion, PDO::PARAM_STR);
+            $statement->bindParam(":descripcion", $descipcion, PDO::PARAM_STR);
             $statement->bindParam(":horaInicio", $horaInicio, PDO::PARAM_STR);
             $statement->bindParam(":horaFin", $horaFin, PDO::PARAM_STR);
             $statement->bindParam(":fkIdInstructor", $fkIdInstructor, PDO::PARAM_INT);
@@ -39,13 +39,12 @@ class CompetenciaModel extends BaseModel{
 
     public function getCompetencia($id){
         try {
-            $sql = "SELECT c.id, c.nombre AS nombreCompetencia, c.descripcion, 
-                       c.horaInicio, c.horaFin, 
-                       i.nombre AS nombreInstructor, i.cedula AS cedulaInstructor, 
-                       f.ficha AS numeroFicha
+            $sql = "SELECT c.*,
+                i.nombre AS nombreInstructor, f.ficha AS numeroFicha
                 FROM competencia c
                 INNER JOIN instructor i ON c.fkIdInstructor = i.id
-                INNER JOIN ficha f ON c.fkIdFicha = f.id";
+                INNER JOIN ficha f ON c.fkIdFicha = f.id
+                WHERE c.id = :id";
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindParam(":id", $id, PDO::PARAM_INT);
             $statement->execute();
@@ -64,7 +63,7 @@ class CompetenciaModel extends BaseModel{
             $statement = $this->dbConnection->prepare($sql);
             $statement->bindParam(":id", $id, PDO::PARAM_INT);
             $statement->bindParam(":nombre", $nombre, PDO::PARAM_STR);
-            $statement->bindParam(":decripcion", $decripcion, PDO::PARAM_STR);
+            $statement->bindParam(":descripcion", $descripcion, PDO::PARAM_STR);
             $statement->bindParam(":horaInicio", $horaInicio, PDO::PARAM_STR);
             $statement->bindParam(":horaFin", $horaFin, PDO::PARAM_STR);
             $statement->bindParam(":fkIdInstructor", $fkIdInstructor, PDO::PARAM_INT);
@@ -72,7 +71,7 @@ class CompetenciaModel extends BaseModel{
             $result = $statement->execute();
             return $result;
         } catch (PDOException $ex) {
-            echo "No se pudo editar la ficha";
+            echo "No se pudo editar la ficha".$ex;
         }
     }
 
@@ -84,6 +83,18 @@ class CompetenciaModel extends BaseModel{
             $statement->execute();
         } catch (PDOException $ex) {
             echo "No se pudo eliminar la competencia";
+        }
+    }
+
+    public function getAllInstructor($id){
+        try {
+            $sql = "SELECT * FROM $this->table WHERE fkIdInstructor=:id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            return $statement->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $ex) {
+            echo "No se pudo obtener las competencias: ".$ex;
         }
     }
 }
