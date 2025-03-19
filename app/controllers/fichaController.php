@@ -19,7 +19,7 @@ class FichaController extends BaseController{
 
     public function view(){
         $obj = new FichaModel();
-        $items = $obj->getAll();
+        $items = $obj->getFichasCoordinador($_SESSION["coordinador"]);
         $data = [
             "fichas"=>$items,
             "titulo" => "Lista de fichas"

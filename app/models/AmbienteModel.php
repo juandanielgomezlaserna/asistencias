@@ -31,7 +31,7 @@ class AmbienteModel extends BaseModel{
 
     public function getAmbiente($id){
         try {
-            $sql = $sql = "SELECT a.*, c.nombre AS centroNombre 
+            $sql = "SELECT a.*, c.nombre AS centroNombre 
             FROM ambiente a
             INNER JOIN centro c ON a.fkIdCentro = c.id
             WHERE a.id=:id";
@@ -40,6 +40,22 @@ class AmbienteModel extends BaseModel{
             $statement->execute();
             $result = $statement->fetchAll(PDO::FETCH_OBJ);
             return $result[0];
+        } catch (PDOException $ex) {
+            echo "Error al obtener el ambiente: ".$ex->getMessage();
+        }
+    }
+
+    public function getAmbientesCoordinador($id){
+        try {
+            $sql  = "SELECT a.* 
+            FROM ambiente a
+            INNER JOIN centro c ON a.fkIdCentro = c.id
+            WHERE c.fkIdCoordinador=:id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            $result = $statement->fetchAll(PDO::FETCH_OBJ);
+            return $result;
         } catch (PDOException $ex) {
             echo "Error al obtener el ambiente: ".$ex->getMessage();
         }

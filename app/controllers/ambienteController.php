@@ -18,7 +18,7 @@ class AmbienteController extends BaseController{
 
     public function view(){
         $obj = new AmbienteModel();
-        $items = $obj->getAll();
+        $items = $obj->getAmbientesCoordinador($_SESSION["coordinador"]);
         $data = [
             "ambientes"=>$items,
             "titulo" => "Lista de ambientes"

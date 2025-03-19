@@ -27,7 +27,7 @@ class InstructorController extends BaseController{
 
     public function view(){
         $obj = new InstructorModel();
-        $items = $obj->getAll();
+        $items = $obj->getInstructoresCoordinador($_SESSION["coordinador"]);
         $data = [
             "instructores"=>$items,
             "titulo" => "Lista de instructores"

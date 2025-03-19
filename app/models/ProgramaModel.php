@@ -83,4 +83,18 @@ class ProgramaModel extends BaseModel{
             echo "No se pudo obtener los programas: ".$ex;
         }
     }
+
+    public function getProgramasCoordinador($id){
+        try {
+            $sql = "SELECT p.* FROM $this->table p
+            INNER JOIN centro c ON p.fkIdCentro = c.id
+            WHERE c.fkIdCoordinador = :id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            return $statement->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $ex) {
+            echo "No se pudo obtener los programas: ".$ex;
+        }
+    }
 }

@@ -17,7 +17,7 @@ class programaController extends BaseController{
 
     public function view(){
         $obj = new ProgramaModel();
-        $items = $obj->getAll();
+        $items = $obj->getProgramasCoordinador($_SESSION["coordinador"]);
         $data = [
             "programas"=>$items,
             "titulo" => "Lista de programas"

@@ -61,6 +61,22 @@ class InstructorModel extends BaseModel{
         }
     }
 
+    public function getInstructoresCoordinador($id){
+        try {
+            $sql = "SELECT i.*
+            FROM instructor i 
+            INNER JOIN centro c ON i.fkIdCentro = c.id
+            WHERE c.fkIdCoordinador = :id";
+            $statement = $this->dbConnection->prepare($sql);
+            $statement->bindParam(":id", $id, PDO::PARAM_INT);
+            $statement->execute();
+            $result = $statement->fetchAll(PDO::FETCH_OBJ);
+            return $result;
+        } catch (PDOException $ex) {
+            echo "Error al obtener el instructor: ".$ex->getMessage();
+        }
+    }
+
     public function editInstructor($id, $nombre, $cedula,  $fkIdCentro){
         try {
             $sql = "UPDATE instructor 
